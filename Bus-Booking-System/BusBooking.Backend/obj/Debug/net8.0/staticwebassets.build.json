@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "46YoBdqbQMqtzaHnxqCfaAkSWbEFcBy/cTRO9ByNhcE=",
+  "Source": "BusBooking.Backend",
+  "BasePath": "_content/BusBooking.Backend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
