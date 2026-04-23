@@ -1,0 +1,13 @@
+.admin-page { padding: 40px 0 60px; }
+.admin-page h2 { margin-bottom: 24px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
+.stat-box { padding: 24px; text-align: center; }
+.stat-box .stat-num { font-size: 2.2rem; font-weight: 800; color: var(--brand); }
+.stat-box .stat-text { font-size: 0.85rem; color: var(--slate); margin-top: 4px; }
+
+.op-list-card { padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+.route-card { padding: 16px 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+.route-card .arrow { color: var(--brand); font-weight: 700; }
+
+.add-route-form { display: flex; gap: 12px; margin-bottom: 24px; align-items: flex-end; }
+.add-route-form .form-group { flex: 1; margin-bottom: 0; }

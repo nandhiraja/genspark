@@ -1,0 +1,19 @@
+<div class="admin-page container">
+  <h2>Manage Operators</h2>
+  @if (loading) { <div class="page-loader"><div class="spinner"></div></div> }
+  @if (!loading && operators.length === 0) { <p style="color:var(--slate)">No operators found.</p> }
+  @for (op of operators; track op.id) {
+    <div class="card op-list-card">
+      <div>
+        <h4>{{ op.companyName }}</h4>
+        <span style="font-size:0.85rem; color:var(--slate)">{{ op.userEmail }} ({{ op.userId | slice:0:8 }})</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="badge" [class.badge-success]="op.status === 'APPROVED'" [class.badge-warning]="op.status === 'PENDING'" [class.badge-danger]="op.status === 'REJECTED'">{{ op.status }}</span>
+        @if (op.status === 'PENDING') {
+          <button class="btn btn-primary btn-sm" (click)="approve(op.id)">Approve</button>
+        }
+      </div>
+    </div>
+  }
+</div>

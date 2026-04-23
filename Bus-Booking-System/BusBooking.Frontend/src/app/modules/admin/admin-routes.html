@@ -1,0 +1,18 @@
+<div class="admin-page container">
+  <h2>Manage Routes</h2>
+  <div class="add-route-form">
+    <div class="form-group"><label>Source</label><input class="form-control" [(ngModel)]="source" placeholder="e.g. Chennai"></div>
+    <div class="form-group"><label>Destination</label><input class="form-control" [(ngModel)]="destination" placeholder="e.g. Bangalore"></div>
+    <button class="btn btn-primary" (click)="addRoute()" [disabled]="adding">
+      @if (adding) { <span class="spinner"></span> } @else { Add Route }
+    </button>
+  </div>
+  @if (loading) { <div class="page-loader"><div class="spinner"></div></div> }
+  @for (r of routes; track r.id) {
+    <div class="card route-card">
+      <span style="font-weight:600">{{ r.source }}</span>
+      <span class="arrow">→</span>
+      <span style="font-weight:600">{{ r.destination }}</span>
+    </div>
+  }
+</div>

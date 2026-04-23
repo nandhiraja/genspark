@@ -1,0 +1,11 @@
+<div class="admin-page container">
+  <h2>Admin Dashboard</h2>
+  @if (loading) { <div class="page-loader"><div class="spinner"></div></div> } @else {
+    <div class="stats-grid">
+      <div class="card stat-box"><div class="stat-num">₹{{ stats.totalRevenue || 0 }}</div><div class="stat-text">Total Revenue</div></div>
+      <div class="card stat-box"><div class="stat-num">{{ stats.activeBuses || 0 }}</div><div class="stat-text">Active Buses</div></div>
+      <div class="card stat-box"><div class="stat-num">{{ stats.approvedOperators || 0 }}</div><div class="stat-text">Approved Operators</div></div>
+      <div class="card stat-box"><div class="stat-num">{{ stats.pendingOperators || 0 }}</div><div class="stat-text">Pending Operators</div></div>
+    </div>
+  }
+</div>
