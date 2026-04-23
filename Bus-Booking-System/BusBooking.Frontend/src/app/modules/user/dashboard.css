@@ -1,0 +1,11 @@
+.dash-page { padding: 40px 0 60px; }
+.dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.stat-card { background: var(--brand); color: white; padding: 16px 28px; border-radius: var(--radius); }
+.stat-label { font-size: 0.8rem; opacity: 0.8; display: block; }
+.stat-value { font-size: 1.6rem; font-weight: 800; }
+
+.booking-card { padding: 24px; margin-bottom: 16px; }
+.booking-route { font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; }
+.route-arrow { color: var(--brand); margin: 0 8px; }
+.booking-meta { display: flex; gap: 20px; align-items: center; color: var(--slate); font-size: 0.9rem; margin-bottom: 12px; }
+.empty-state { text-align: center; padding: 80px 20px; color: var(--slate); }

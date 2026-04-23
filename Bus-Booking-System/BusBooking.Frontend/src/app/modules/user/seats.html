@@ -1,0 +1,81 @@
+<div class="seats-page container">
+  @if (loading) {
+    <div class="page-loader"><div class="spinner"></div></div>
+  } @else {
+    <div class="seats-layout">
+      <!-- Left: Seat Grid -->
+      <div class="seat-panel card">
+        <div class="panel-header">
+          <h3>Select Your Seats</h3>
+          @if (locked) {
+            <div class="timer-badge">⏱ {{ timerDisplay }}</div>
+          }
+        </div>
+        <div class="seat-legend">
+          <span class="legend-item"><span class="legend-dot available"></span> Available</span>
+          <span class="legend-item"><span class="legend-dot selected"></span> Selected</span>
+          <span class="legend-item"><span class="legend-dot locked"></span> Locked</span>
+          <span class="legend-item"><span class="legend-dot booked"></span> Booked</span>
+        </div>
+        <div class="bus-frame">
+          <div class="steering">🚌 Front</div>
+          <div class="seat-grid">
+            @for (seat of seats; track seat.id) {
+              <button
+                class="seat"
+                [class.available]="seat.status === 'AVAILABLE' && !isSelected(seat)"
+                [class.selected]="isSelected(seat)"
+                [class.locked]="seat.status === 'LOCKED'"
+                [class.booked]="seat.status === 'BOOKED'"
+                [disabled]="seat.status !== 'AVAILABLE' || locked"
+                (click)="toggleSeat(seat)">
+                {{ seat.seatNumber }}
+              </button>
+            }
+          </div>
+        </div>
+        @if (!locked) {
+          <button class="btn btn-primary btn-block btn-lg" (click)="lockSeats()" [disabled]="locking || selectedSeats.length === 0">
+            @if (locking) { <span class="spinner"></span> } @else { Lock {{ selectedSeats.length }} Seat(s) }
+          </button>
+        }
+      </div>
+
+      <!-- Right: Passenger Details -->
+      @if (step === 'details') {
+        <div class="details-panel card">
+          <div class="panel-header">
+            <h3>Passenger Details</h3>
+            <div class="timer-badge">⏱ {{ timerDisplay }}</div>
+          </div>
+          @for (p of passengers; track $index; let i = $index) {
+            <div class="passenger-card">
+              <h4>Seat {{ selectedSeats[i].seatNumber }}</h4>
+              <div class="form-group">
+                <label>Name</label>
+                <input class="form-control" [(ngModel)]="p.name" placeholder="Full name">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Age</label>
+                  <input class="form-control" type="number" [(ngModel)]="p.age" placeholder="Age">
+                </div>
+                <div class="form-group">
+                  <label>Gender</label>
+                  <select class="form-control" [(ngModel)]="p.gender">
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          }
+          <button class="btn btn-primary btn-block btn-lg" (click)="confirmBooking()" [disabled]="confirming">
+            @if (confirming) { <span class="spinner"></span> Processing Payment... } @else { Confirm & Pay }
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

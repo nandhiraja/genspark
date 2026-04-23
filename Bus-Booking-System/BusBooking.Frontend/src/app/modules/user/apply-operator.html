@@ -1,0 +1,13 @@
+<div class="dash-page container">
+  <h2>Become a Bus Operator</h2>
+  <p style="color:var(--slate); margin-bottom:24px;">Apply to list your buses on GO-BUS. An admin will review your application.</p>
+  <div class="card" style="padding:28px; max-width:500px;">
+    <div class="form-group">
+      <label>Company Name</label>
+      <input class="form-control" [(ngModel)]="companyName" placeholder="e.g. Presidio Premium Travels">
+    </div>
+    <button class="btn btn-primary btn-block" (click)="submit()" [disabled]="loading">
+      @if (loading) { <span class="spinner"></span> } @else { Submit Application }
+    </button>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<div class="dash-page container">
+  <h2>My Profile</h2>
+  <div class="card" style="padding:28px; max-width:500px; margin-top:24px;">
+    <div class="form-group"><label>Name</label><input class="form-control" [(ngModel)]="name" placeholder="Your name"></div>
+    <div class="form-group"><label>Phone</label><input class="form-control" [(ngModel)]="phone" placeholder="Phone number"></div>
+    <button class="btn btn-primary" (click)="save()" [disabled]="loading">
+      @if (loading) { <span class="spinner"></span> } @else { Save Changes }
+    </button>
+  </div>
+</div>

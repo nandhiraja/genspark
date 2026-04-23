@@ -1,0 +1,97 @@
+.seats-page { padding: 40px 0 60px; }
+
+.seats-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+
+.seat-panel, .details-panel { padding: 28px; }
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.timer-badge {
+  background: var(--danger);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.seat-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--slate);
+}
+.legend-dot {
+  width: 16px; height: 16px;
+  border-radius: 4px;
+}
+.legend-dot.available { background: #d1fae5; border: 2px solid var(--success); }
+.legend-dot.selected { background: var(--brand); }
+.legend-dot.locked { background: var(--warning); }
+.legend-dot.booked { background: var(--danger); }
+
+.bus-frame {
+  background: var(--canvas);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.steering {
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--slate);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed var(--border);
+}
+
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.seat {
+  aspect-ratio: 1;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  background: var(--white);
+  color: var(--dark);
+}
+.seat.available { border-color: var(--success); background: #ecfdf5; }
+.seat.available:hover { background: var(--success); color: white; transform: scale(1.08); }
+.seat.selected { background: var(--brand); color: white; border-color: var(--brand-dark); }
+.seat.locked { background: var(--warning); color: white; border-color: #d97706; cursor: not-allowed; }
+.seat.booked { background: var(--danger); color: white; border-color: #dc2626; cursor: not-allowed; opacity: 0.7; }
+.seat:disabled { cursor: not-allowed; }
+
+.passenger-card {
+  background: var(--canvas);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.passenger-card h4 { margin-bottom: 12px; color: var(--brand); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }

@@ -1,0 +1,32 @@
+<div class="dash-page container">
+  <div class="dash-header">
+    <h2>My Trips</h2>
+    <div class="stat-card">
+      <span class="stat-label">Total Spent</span>
+      <span class="stat-value">₹{{ totalSpent }}</span>
+    </div>
+  </div>
+  @if (loading) {
+    <div class="page-loader"><div class="spinner"></div></div>
+  }
+  @if (!loading && bookings.length === 0) {
+    <div class="empty-state"><h3>No bookings yet</h3><p>Search for buses and book your first trip!</p></div>
+  }
+  @for (b of bookings; track b.id) {
+    <div class="booking-card card">
+      <div class="booking-route">
+        <span class="route-city">{{ b.source }}</span>
+        <span class="route-arrow">→</span>
+        <span class="route-city">{{ b.destination }}</span>
+      </div>
+      <div class="booking-meta">
+        <span>🚌 {{ b.busNumber }}</span>
+        <span>₹{{ b.totalAmount }}</span>
+        <span class="badge" [class.badge-success]="b.status === 'CONFIRMED'" [class.badge-danger]="b.status === 'CANCELLED'" [class.badge-warning]="b.status === 'PENDING'">{{ b.status }}</span>
+      </div>
+      @if (b.status === 'CONFIRMED') {
+        <button class="btn btn-outline btn-sm" (click)="cancel(b.id)">Cancel Booking</button>
+      }
+    </div>
+  }
+</div>
