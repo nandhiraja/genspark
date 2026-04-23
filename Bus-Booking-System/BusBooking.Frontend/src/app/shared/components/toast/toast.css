@@ -1,0 +1,25 @@
+.toast {
+  padding: 14px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  animation: slideIn 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  min-width: 280px;
+}
+
+.toast-icon { font-size: 1.1rem; }
+
+.toast-success { background: #059669; color: white; }
+.toast-error { background: var(--danger); color: white; }
+.toast-warning { background: #d97706; color: white; }
+.toast-info { background: var(--brand); color: white; }
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
