@@ -1,0 +1,18 @@
+<div class="op-page container">
+  <h2>Manage My Buses</h2>
+  @if (loading) { <div class="page-loader"><div class="spinner"></div></div> }
+  @if (!loading && buses.length === 0) { <p style="color:var(--slate)">You haven't added any buses yet.</p> }
+  @for (bus of buses; track bus.id) {
+    <div class="card bus-manage-card">
+      <div class="info">
+        <h4>{{ bus.busNumber }}</h4>
+        <span>{{ bus.source }} → {{ bus.destination }}</span>
+        <span style="margin-left:12px">{{ bus.totalSeats }} seats · ₹{{ bus.price }}</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px">
+        <span class="badge" [class.badge-success]="bus.status === 'ACTIVE'" [class.badge-danger]="bus.status === 'INACTIVE'">{{ bus.status }}</span>
+        <button class="btn btn-ghost btn-sm" (click)="toggleStatus(bus)">Toggle</button>
+      </div>
+    </div>
+  }
+</div>

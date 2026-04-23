@@ -1,0 +1,10 @@
+.op-page { padding: 40px 0 60px; }
+.op-page h2 { margin-bottom: 24px; }
+.op-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.op-stat { padding: 24px; }
+.op-stat .label { font-size: 0.8rem; color: var(--slate); text-transform: uppercase; }
+.op-stat .value { font-size: 2rem; font-weight: 800; margin-top: 4px; }
+
+.bus-manage-card { padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+.bus-manage-card .info h4 { margin-bottom: 4px; }
+.bus-manage-card .info span { font-size: 0.85rem; color: var(--slate); }
