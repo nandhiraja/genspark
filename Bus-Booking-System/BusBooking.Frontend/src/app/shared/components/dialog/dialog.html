@@ -1,0 +1,28 @@
+@if (dialog.active$ | async; as active) {
+  <div class="dialog-overlay" (click)="onCancel()">
+    <div class="dialog-card card" (click)="$event.stopPropagation()">
+      <h3>{{ active.title }}</h3>
+      <p class="dialog-message">{{ active.message }}</p>
+
+      @if (active.kind === 'prompt') {
+        <div class="form-group">
+          <label>{{ active.inputLabel || 'Reason' }}</label>
+          <textarea
+            class="form-control"
+            rows="3"
+            [(ngModel)]="inputValue"
+            [placeholder]="active.inputPlaceholder || 'Type here'"></textarea>
+        </div>
+      }
+
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-ghost" (click)="onCancel()">
+          {{ active.cancelText || 'Cancel' }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="onConfirm()">
+          {{ active.confirmText || 'Confirm' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
