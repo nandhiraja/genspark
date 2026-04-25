@@ -1,0 +1,55 @@
+@if (auth.isLoggedIn()) {
+  <button type="button" class="mail-fab" (click)="toggleOpen()" aria-label="Open mail panel">
+    Mail
+    @if (unreadCount > 0) { <span class="mail-badge">{{ unreadCount }}</span> }
+  </button>
+
+  @if (open) {
+    <section class="mail-panel card">
+      <header class="mail-head">
+        <h3>Inbox (mock)</h3>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="toggleOpen()">Close</button>
+      </header>
+
+      <div class="mail-body">
+        <aside class="mail-list">
+          @for (m of items; track m.id) {
+            <button type="button" class="mail-row" [class.active]="selected?.id === m.id" (click)="select(m)">
+              <div class="mail-row-top">
+                <strong>{{ m.direction === 'INBOX' ? m.fromEmail : ('To: ' + m.toEmail) }}</strong>
+                @if (m.direction === 'INBOX' && !m.isRead) { <span class="dot"></span> }
+              </div>
+              <div class="mail-subject">{{ m.subject }}</div>
+              <div class="mail-time">{{ m.createdAt | date: 'dd MMM, hh:mm a' }}</div>
+            </button>
+          } @empty {
+            <p class="mail-empty">No messages yet.</p>
+          }
+        </aside>
+
+        <article class="mail-view">
+          @if (selected) {
+            <h4>{{ selected.subject }}</h4>
+            <p class="mail-meta">
+              <strong>From:</strong> {{ selected.fromEmail }}<br />
+              <strong>To:</strong> {{ selected.toEmail }}
+            </p>
+            <pre class="mail-content">{{ selected.body }}</pre>
+
+            <div class="mail-actions">
+              <button type="button" class="btn btn-outline btn-sm" (click)="deleteSelected()">Delete mail</button>
+            </div>
+
+            <div class="form-group">
+              <label>Reply</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="replyBody" placeholder="Type reply..."></textarea>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" (click)="sendReply()">Send reply</button>
+          } @else {
+            <p class="mail-empty">Select a message to view details.</p>
+          }
+        </article>
+      </div>
+    </section>
+  }
+}
