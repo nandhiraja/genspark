@@ -1,52 +1,77 @@
 using BusBooking.Backend.DTOs;
 using BusBooking.Backend.Helpers;
 using BusBooking.Backend.Models;
-using BusBooking.Backend.Repositories;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading.Tasks;
 
 namespace BusBooking.Backend.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly ApplicationDbContext _context;
         private readonly JwtHelper _jwtHelper;
 
-        public AuthService(IUserRepository userRepository, JwtHelper jwtHelper)
+        public AuthService(ApplicationDbContext context, JwtHelper jwtHelper)
         {
-            _userRepository = userRepository;
+            _context = context;
             _jwtHelper = jwtHelper;
         }
 
-        public async Task<bool> RegisterAsync(RegisterRequestDto request)
+        public async Task<UserInfoDto?> RegisterAsync(RegisterRequestDto request)
         {
-            var existingUsers = await _userRepository.FindAsync(u => u.Email == request.Email);
-            if (existingUsers.Any())
-                return false;
+            var exists = await _context.Users
+                .AnyAsync(u => u.Email.ToLower() == request.Email.ToLower());
+            if (exists) return null;
 
             var user = new User
             {
-                Email = request.Email,
+                Name         = request.Name,
+                Email        = request.Email.ToLower().Trim(),
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                Name = request.Name,
-                Role = UserRole.USER
+                Phone        = request.Phone,
+                Role         = UserRole.USER
             };
 
-            await _userRepository.AddAsync(user);
-            await _userRepository.SaveChangesAsync();
-            return true;
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+            return MapToUserInfo(user);
         }
 
-        public async Task<AuthResponseDto?> LoginAsync(LoginRequestDto request)
+        public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
         {
-            var users = await _userRepository.FindAsync(u => u.Email == request.Email);
-            var user = users.FirstOrDefault();
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == request.Email.ToLower());
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-                return null;
+            if (user == null) return null;
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) return null;
 
             var token = _jwtHelper.GenerateToken(user);
-            return new AuthResponseDto { Token = token };
+
+            return new LoginResponseDto
+            {
+                Token  = token,
+                Name   = user.Name,
+                Email  = user.Email,
+                Role   = user.Role.ToString(),
+                UserId = user.Id
+            };
         }
+
+        public async Task<UserInfoDto?> GetCurrentUserAsync(Guid userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            return user == null ? null : MapToUserInfo(user);
+        }
+
+        private static UserInfoDto MapToUserInfo(User user) => new()
+        {
+            Id           = user.Id,
+            Name         = user.Name,
+            Email        = user.Email,
+            Role         = user.Role.ToString(),
+            Phone        = user.Phone,
+            ProfileImage = user.ProfileImage
+        };
     }
 }
