@@ -3,6 +3,7 @@ using System;
 using BusBooking.Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BusBooking.Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260424065719_FixOperatorRevampSchema")]
+    partial class FixOperatorRevampSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,10 +69,6 @@ namespace BusBooking.Backend.Migrations
 
                     b.Property<bool>("AdminDeactivated")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("AdminDeactivationReason")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
 
                     b.Property<int>("AvailableSeats")
                         .HasColumnType("integer");
@@ -238,55 +237,6 @@ namespace BusBooking.Backend.Migrations
                         .IsUnique();
 
                     b.ToTable("Cities");
-                });
-
-            modelBuilder.Entity("BusBooking.Backend.Models.MockMailMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FromEmail")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("ParentMessageId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ReadAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasMaxLength(240)
-                        .HasColumnType("character varying(240)");
-
-                    b.Property<string>("ToEmail")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentMessageId");
-
-                    b.HasIndex("ToEmail", "CreatedAt");
-
-                    b.HasIndex("ToEmail", "IsRead");
-
-                    b.ToTable("MockMailMessages");
                 });
 
             modelBuilder.Entity("BusBooking.Backend.Models.Operator", b =>
@@ -620,16 +570,6 @@ namespace BusBooking.Backend.Migrations
                     b.Navigation("Bus");
 
                     b.Navigation("Operator");
-                });
-
-            modelBuilder.Entity("BusBooking.Backend.Models.MockMailMessage", b =>
-                {
-                    b.HasOne("BusBooking.Backend.Models.MockMailMessage", "ParentMessage")
-                        .WithMany()
-                        .HasForeignKey("ParentMessageId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("ParentMessage");
                 });
 
             modelBuilder.Entity("BusBooking.Backend.Models.Operator", b =>

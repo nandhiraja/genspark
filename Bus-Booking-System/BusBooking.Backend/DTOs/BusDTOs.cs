@@ -1,16 +1,33 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BusBooking.Backend.DTOs
 {
     public class AddBusRequestDto
     {
+        [Required]
         public Guid RouteId { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-        public decimal Price { get; set; }
-        public int TotalSeats { get; set; }
+
+        [Required]
+        [StringLength(30, MinimumLength = 3)]
         public string BusNumber { get; set; } = string.Empty;
+
+        [Required]
+        public DateTime StartTime { get; set; }
+
+        [Required]
+        public DateTime EndTime { get; set; }
+
+        [Range(typeof(decimal), "1", "100000")]
+        public decimal Price { get; set; }
+
+        [Range(1, 120)]
+        public int TotalSeats { get; set; }
+
+        public Guid? SourceBoardingPointId { get; set; }
+        public Guid? DestinationBoardingPointId { get; set; }
     }
+
 
     public class AddRouteRequestDto
     {
