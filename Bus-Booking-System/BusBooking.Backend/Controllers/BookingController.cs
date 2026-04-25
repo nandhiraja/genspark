@@ -33,10 +33,18 @@ namespace BusBooking.Backend.Controllers
         public async Task<IActionResult> ConfirmBooking([FromBody] ConfirmBookingRequestDto request)
         {
             var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
-            var result = await _bookingService.ConfirmBookingAsync(userId, request);
+            var bookingId = await _bookingService.ConfirmBookingAsync(userId, request);
 
-            if (!result) return BadRequest(new { message = "Booking failed. Ensure seats are locked and payment is valid." });
-            return Ok(new { message = "Booking confirmed." });
+            if (bookingId == null) return BadRequest(new { message = "Booking failed. Ensure seats are locked and payment is valid." });
+            return Ok(new { message = "Booking confirmed.", bookingId });
+        }
+
+        [HttpPost("unlock-seats")]
+        public async Task<IActionResult> UnlockSeats([FromBody] UnlockSeatsRequestDto request)
+        {
+            var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+            await _bookingService.UnlockSeatsAsync(userId, request.BusId, request.SeatIds);
+            return Ok(new { message = "Seats unlocked successfully." });
         }
 
         [HttpPost("cancel/{id}")]

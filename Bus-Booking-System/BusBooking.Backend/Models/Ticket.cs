@@ -22,5 +22,7 @@ namespace BusBooking.Backend.Models
         public int Age { get; set; }
         
         public string? Gender { get; set; }
+        
+        public string? Phone { get; set; }
     }
 }

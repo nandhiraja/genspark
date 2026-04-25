@@ -7,7 +7,8 @@ namespace BusBooking.Backend.Services
     public interface IBookingService
     {
         Task<bool> LockSeatsAsync(Guid userId, LockSeatsRequestDto request);
-        Task<bool> ConfirmBookingAsync(Guid userId, ConfirmBookingRequestDto request);
+        Task<Guid?> ConfirmBookingAsync(Guid userId, ConfirmBookingRequestDto request);
         Task<bool> CancelBookingAsync(Guid userId, Guid bookingId);
+        Task<bool> UnlockSeatsAsync(Guid userId, Guid busId, List<Guid> seatIds);
     }
 }
