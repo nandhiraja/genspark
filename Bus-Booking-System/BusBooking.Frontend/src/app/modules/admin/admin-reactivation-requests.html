@@ -1,0 +1,29 @@
+<div class="admin-shell">
+  <app-admin-nav></app-admin-nav>
+  <div class="admin-page container">
+    <header class="admin-page-head">
+      <h1>Reactivation requests</h1>
+      <p class="admin-lead">Review requests from operators to reactivate admin-deactivated buses.</p>
+    </header>
+    @if (loading) {
+      <div class="page-loader"><div class="spinner"></div></div>
+    } @else if (rows.length === 0) {
+      <div class="card empty-admin"><p>No pending reactivation requests.</p></div>
+    } @else {
+      <div class="request-grid request-grid--admin">
+        @for (r of rows; track r.id) {
+          <article class="card request-card request-card--admin">
+            <h3>{{ r.busNumber }}</h3>
+            <p class="muted small">Operator note: {{ r.operatorReason || 'None' }}</p>
+            <div class="request-actions">
+              <button type="button" class="btn btn-primary btn-sm" (click)="approve(r.id)" [disabled]="acting === r.id">
+                @if (acting === r.id) { <span class="spinner"></span> } @else { Approve }
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" (click)="reject(r.id)" [disabled]="acting === r.id">Reject</button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>

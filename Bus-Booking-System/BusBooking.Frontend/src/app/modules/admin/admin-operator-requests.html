@@ -1,0 +1,30 @@
+<div class="admin-shell">
+  <app-admin-nav></app-admin-nav>
+  <div class="admin-page container">
+    <header class="admin-page-head">
+      <h1>Operator applications</h1>
+      <p class="admin-lead">Review new operator sign-ups before they can add buses.</p>
+    </header>
+    @if (loading) {
+      <div class="page-loader"><div class="spinner"></div></div>
+    } @else if (operators.length === 0) {
+      <div class="card empty-admin"><p>No pending operator applications.</p></div>
+    } @else {
+      <div class="request-grid request-grid--admin">
+        @for (op of operators; track op.id) {
+          <article class="card request-card request-card--admin">
+            <h3>{{ op.companyName }}</h3>
+            <p class="muted">{{ op.ownerName }} · {{ op.userEmail }}</p>
+            <div class="request-actions">
+              <button type="button" class="btn btn-primary btn-sm" (click)="approve(op.id)" [disabled]="acting === op.id">
+                @if (acting === op.id) { <span class="spinner"></span> } @else { Approve }
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" (click)="reject(op.id)" [disabled]="acting === op.id">Reject</button>
+              <a class="btn btn-ghost btn-sm" [routerLink]="['/admin/operators', op.id]">View profile</a>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>

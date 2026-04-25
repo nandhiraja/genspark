@@ -1,0 +1,48 @@
+<div class="admin-shell">
+  <app-admin-nav></app-admin-nav>
+  <div class="admin-page container">
+    <header class="admin-page-head">
+      <h1>Bus approval requests</h1>
+      <p class="admin-lead">New buses stay pending until you approve them for booking.</p>
+    </header>
+    @if (loading) {
+    <div class="page-loader">
+      <div class="spinner"></div>
+    </div>
+    } @else if (buses.length === 0) {
+    <div class="card empty-admin">
+      <p>No buses waiting for approval.</p>
+    </div>
+    } @else {
+    <div class="admin-table-wrap card admin-surface">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Bus</th>
+            <th>Route</th>
+            <th>Operator</th>
+            <th>Schedule</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (b of buses; track b.id) {
+          <tr>
+            <td><strong>{{ b.busNumber }}</strong></td>
+            <td>{{ b.source }} → {{ b.destination }}</td>
+            <td>{{ b.operatorName }}</td>
+            <td class="muted">{{ b.startTime | date: 'medium' }}</td>
+            <td>
+              <button type="button" class="btn btn-primary btn-sm" (click)="approveBus(b.id)"
+                [disabled]="acting === b.id">
+                @if (acting === b.id) { <span class="spinner"></span> } @else { Approve }
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+</div>

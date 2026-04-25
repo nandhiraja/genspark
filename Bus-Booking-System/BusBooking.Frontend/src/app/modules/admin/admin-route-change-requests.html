@@ -1,0 +1,30 @@
+<div class="admin-shell">
+  <app-admin-nav></app-admin-nav>
+  <div class="admin-page container">
+    <header class="admin-page-head">
+      <h1>Route change requests</h1>
+      <p class="admin-lead">Review operator requests to change an existing bus route and boarding points.</p>
+    </header>
+    @if (loading) {
+      <div class="page-loader"><div class="spinner"></div></div>
+    } @else if (rows.length === 0) {
+      <div class="card empty-admin"><p>No pending route change requests.</p></div>
+    } @else {
+      <div class="request-grid">
+        @for (r of rows; track r.id) {
+          <article class="card request-card">
+            <h3>{{ r.busNumber }}</h3>
+            <p class="muted">Current: {{ r.currentRoute }}</p>
+            <p class="muted small">Operator note: {{ r.operatorReason || 'None' }}</p>
+            <div class="request-actions">
+              <button type="button" class="btn btn-primary btn-sm" (click)="approve(r.id)" [disabled]="acting === r.id">
+                @if (acting === r.id) { <span class="spinner"></span> } @else { Approve }
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" (click)="reject(r.id)" [disabled]="acting === r.id">Reject</button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>

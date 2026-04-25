@@ -1,18 +1,40 @@
-<div class="admin-page container">
-  <h2>Manage Routes</h2>
-  <div class="add-route-form">
-    <div class="form-group"><label>Source</label><input class="form-control" [(ngModel)]="source" placeholder="e.g. Chennai"></div>
-    <div class="form-group"><label>Destination</label><input class="form-control" [(ngModel)]="destination" placeholder="e.g. Bangalore"></div>
-    <button class="btn btn-primary" (click)="addRoute()" [disabled]="adding">
-      @if (adding) { <span class="spinner"></span> } @else { Add Route }
-    </button>
-  </div>
-  @if (loading) { <div class="page-loader"><div class="spinner"></div></div> }
-  @for (r of routes; track r.id) {
-    <div class="card route-card">
-      <span style="font-weight:600">{{ r.source }}</span>
-      <span class="arrow">→</span>
-      <span style="font-weight:600">{{ r.destination }}</span>
+<div class="admin-shell">
+  <app-admin-nav></app-admin-nav>
+  <div class="admin-page container">
+    <header class="admin-page-head">
+      <h1>Routes</h1>
+      <p class="admin-lead">Define city pairs operators can assign buses to. You can remove a route only when no bus is linked to it.</p>
+    </header>
+    <div class="add-route-form card">
+      <div class="form-group"><label>Source</label><input class="form-control" [(ngModel)]="source" placeholder="e.g. Chennai"></div>
+      <div class="form-group"><label>Destination</label><input class="form-control" [(ngModel)]="destination" placeholder="e.g. Bangalore"></div>
+      <button type="button" class="btn btn-primary" (click)="addRoute()" [disabled]="adding">
+        @if (adding) { <span class="spinner"></span> } @else { Add route }
+      </button>
     </div>
-  }
+    @if (loading) {
+      <div class="page-loader"><div class="spinner"></div></div>
+    } @else {
+      <div class="route-list">
+        @for (r of routes; track r.id) {
+          <div class="card route-card route-card--row">
+            <div class="route-card__path">
+              <span class="fw-600">{{ r.source }}</span>
+              <span class="arrow">→</span>
+              <span class="fw-600">{{ r.destination }}</span>
+            </div>
+            <button
+              type="button"
+              class="btn btn-outline btn-sm route-card__delete"
+              (click)="deleteRoute(r)"
+              [disabled]="deletingId === r.id">
+              @if (deletingId === r.id) { <span class="spinner"></span> } @else { Delete }
+            </button>
+          </div>
+        } @empty {
+          <div class="card empty-admin"><p>No routes yet. Add one above.</p></div>
+        }
+      </div>
+    }
+  </div>
 </div>

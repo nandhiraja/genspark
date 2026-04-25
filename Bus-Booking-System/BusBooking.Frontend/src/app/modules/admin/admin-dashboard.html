@@ -1,11 +1,145 @@
-<div class="admin-page container">
-  <h2>Admin Dashboard</h2>
-  @if (loading) { <div class="page-loader"><div class="spinner"></div></div> } @else {
-    <div class="stats-grid">
-      <div class="card stat-box"><div class="stat-num">₹{{ stats.totalRevenue || 0 }}</div><div class="stat-text">Total Revenue</div></div>
-      <div class="card stat-box"><div class="stat-num">{{ stats.activeBuses || 0 }}</div><div class="stat-text">Active Buses</div></div>
-      <div class="card stat-box"><div class="stat-num">{{ stats.approvedOperators || 0 }}</div><div class="stat-text">Approved Operators</div></div>
-      <div class="card stat-box"><div class="stat-num">{{ stats.pendingOperators || 0 }}</div><div class="stat-text">Pending Operators</div></div>
-    </div>
-  }
+<div class="admin-shell">
+  <app-admin-nav></app-admin-nav>
+  <div class="admin-page container">
+    <header class="admin-page-head">
+      <h1>Admin dashboard</h1>
+      <p class="admin-lead">Revenue, bookings, and queue health at a glance. Counts use live data from the API.</p>
+    </header>
+
+    @if (loading) {
+      <div class="page-loader"><div class="spinner"></div></div>
+    } @else {
+      <section class="card admin-highlight-band">
+        <div class="admin-highlight-band__item">
+          <span>Gross booking value</span>
+          <strong>₹{{ (stats.totalBookingValue ?? 0) | number: '1.0-0' }}</strong>
+        </div>
+        <div class="admin-highlight-band__item">
+          <span>Platform revenue</span>
+          <strong>₹{{ (stats.platformRevenue ?? 0) | number: '1.0-0' }}</strong>
+        </div>
+        <div class="admin-highlight-band__item">
+          <span>Pending actions</span>
+          <strong>{{ (stats.pendingBusApprovals ?? 0) + (stats.pendingOperators ?? 0) }}</strong>
+        </div>
+      </section>
+
+      <p class="dashboard-footnote">
+        <strong>Registered travellers</strong> counts users with the traveller role (admins and operators are excluded).
+        <strong>Unique bookers (30 days)</strong> counts distinct travellers with at least one <em>confirmed</em> booking in that window - so it can be 0 even when you have traveller accounts.
+      </p>
+
+      <section class="admin-stat-section" aria-labelledby="dash-revenue">
+        <h2 id="dash-revenue" class="admin-stat-section__title">Revenue</h2>
+        <div class="stats-grid admin-stats">
+          <div class="card stat-box stat-box--primary">
+            <div class="stat-num">₹{{ (stats.totalBookingValue ?? 0) | number: '1.0-0' }}</div>
+            <div class="stat-text">Gross booking value (confirmed)</div>
+          </div>
+          <div class="card stat-box">
+            <div class="stat-num">₹{{ (stats.platformRevenue ?? 0) | number: '1.0-0' }}</div>
+            <div class="stat-text">Platform share (~5%)</div>
+          </div>
+          <div class="card stat-box">
+            <div class="stat-num">{{ stats.totalConfirmedBookings ?? 0 }}</div>
+            <div class="stat-text">Confirmed bookings (all time)</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-stat-section" aria-labelledby="dash-users">
+        <h2 id="dash-users" class="admin-stat-section__title">Travellers &amp; activity</h2>
+        <div class="stats-grid admin-stats">
+          <div class="card stat-box">
+            <div class="stat-num">{{ stats.registeredTravellers ?? 0 }}</div>
+            <div class="stat-text">Registered travellers</div>
+          </div>
+          <div class="card stat-box">
+            <div class="stat-num">{{ stats.activeBookersLast30Days ?? 0 }}</div>
+            <div class="stat-text">Unique bookers — confirmed, last 30 days</div>
+          </div>
+          <div class="card stat-box">
+            <div class="stat-num">{{ stats.activeBuses ?? 0 }}</div>
+            <div class="stat-text">Active buses</div>
+          </div>
+          <div class="card stat-box">
+            <div class="stat-num">{{ stats.approvedOperators ?? 0 }}</div>
+            <div class="stat-text">Approved operators</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-stat-section" aria-labelledby="dash-queues">
+        <h2 id="dash-queues" class="admin-stat-section__title">Queues</h2>
+        <div class="stats-grid admin-stats admin-stats--queues">
+          <div class="card stat-box stat-box--warn">
+            <div class="stat-num">{{ stats.pendingBusApprovals ?? 0 }}</div>
+            <div class="stat-text">Buses awaiting approval</div>
+          </div>
+          <div class="card stat-box stat-box--warn">
+            <div class="stat-num">{{ stats.pendingOperators ?? 0 }}</div>
+            <div class="stat-text">Operator applications</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="admin-two-col">
+        <section class="card table-section table-section--padded">
+          <h2>Revenue by operator</h2>
+          <p class="section-hint">Operator portion after platform fee (approximate).</p>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Operator</th>
+                  <th>Bookings</th>
+                  <th>Active buses</th>
+                  <th class="num">Est. operator revenue</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (o of stats.operatorBreakdown || []; track o.id) {
+                  <tr>
+                    <td><strong>{{ o.companyName }}</strong></td>
+                    <td>{{ o.totalBookings }}</td>
+                    <td>{{ o.activeBuses }}</td>
+                    <td class="num">₹{{ o.totalRevenue | number: '1.0-0' }}</td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="4" class="muted">No operator revenue yet.</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card table-section table-section--padded">
+          <h2>Revenue by route</h2>
+          <p class="section-hint">Confirmed trips only.</p>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Route</th>
+                  <th>Bookings</th>
+                  <th class="num">Gross</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of stats.routeBreakdown || []; track r.source + '-' + r.destination) {
+                  <tr>
+                    <td><strong>{{ r.source }}</strong> → {{ r.destination }}</td>
+                    <td>{{ r.bookings }}</td>
+                    <td class="num">₹{{ r.revenue | number: '1.0-0' }}</td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="3" class="muted">No route data yet.</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    }
+  </div>
 </div>

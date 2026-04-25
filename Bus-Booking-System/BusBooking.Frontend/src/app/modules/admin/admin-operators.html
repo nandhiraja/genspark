@@ -1,19 +1,42 @@
-<div class="admin-page container">
-  <h2>Manage Operators</h2>
-  @if (loading) { <div class="page-loader"><div class="spinner"></div></div> }
-  @if (!loading && operators.length === 0) { <p style="color:var(--slate)">No operators found.</p> }
-  @for (op of operators; track op.id) {
-    <div class="card op-list-card">
-      <div>
-        <h4>{{ op.companyName }}</h4>
-        <span style="font-size:0.85rem; color:var(--slate)">{{ op.userEmail }} ({{ op.userId | slice:0:8 }})</span>
-      </div>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <span class="badge" [class.badge-success]="op.status === 'APPROVED'" [class.badge-warning]="op.status === 'PENDING'" [class.badge-danger]="op.status === 'REJECTED'">{{ op.status }}</span>
-        @if (op.status === 'PENDING') {
-          <button class="btn btn-primary btn-sm" (click)="approve(op.id)">Approve</button>
+<div class="admin-shell">
+  <app-admin-nav></app-admin-nav>
+  <div class="admin-page container">
+    <header class="admin-page-head">
+      <h1>All operators</h1>
+      <p class="admin-lead">Open details for buses and deactivation. Pending rows can be approved here too.</p>
+    </header>
+
+    <div class="filter-pills">
+      <button type="button" class="pill" [class.active]="filter === 'ALL'" (click)="setFilter('ALL')">All</button>
+      <button type="button" class="pill" [class.active]="filter === 'PENDING'" (click)="setFilter('PENDING')">Pending</button>
+      <button type="button" class="pill" [class.active]="filter === 'APPROVED'" (click)="setFilter('APPROVED')">Approved</button>
+      <button type="button" class="pill" [class.active]="filter === 'REJECTED'" (click)="setFilter('REJECTED')">Rejected</button>
+    </div>
+
+    @if (loading) {
+      <div class="page-loader"><div class="spinner"></div></div>
+    } @else if (filtered().length === 0) {
+      <div class="card empty-admin"><p>No operators in this filter.</p></div>
+    } @else {
+      <div class="op-grid">
+        @for (op of filtered(); track op.id) {
+          <article class="card op-grid-card">
+            <div class="op-grid-top">
+              <h3><a [routerLink]="['/admin/operators', op.id]">{{ op.companyName }}</a></h3>
+              <span class="badge" [class.badge-success]="st(op.status) === 'APPROVED'" [class.badge-warning]="st(op.status) === 'PENDING'" [class.badge-danger]="st(op.status) === 'REJECTED'">{{ op.status }}</span>
+            </div>
+            <p class="muted small">{{ op.ownerName }}</p>
+            <p class="muted small">{{ op.userEmail }}</p>
+            <div class="op-grid-footer">
+              @if (st(op.status) === 'PENDING') {
+                <button type="button" class="btn btn-primary btn-sm" (click)="approve(op.id)">Approve</button>
+                <button type="button" class="btn btn-outline btn-sm" (click)="reject(op.id)">Reject</button>
+              }
+              <a class="btn btn-ghost btn-sm" [routerLink]="['/admin/operators', op.id]">Details →</a>
+            </div>
+          </article>
         }
       </div>
-    </div>
-  }
+    }
+  </div>
 </div>

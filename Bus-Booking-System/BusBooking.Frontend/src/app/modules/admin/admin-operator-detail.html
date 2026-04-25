@@ -1,0 +1,65 @@
+<div class="admin-shell">
+  <app-admin-nav></app-admin-nav>
+  <div class="admin-page container">
+    @if (loading) {
+      <div class="page-loader"><div class="spinner"></div></div>
+    } @else if (!detail) {
+      <p class="muted">Operator not found.</p>
+      <a routerLink="/admin/operators" class="btn btn-outline">Back to list</a>
+    } @else {
+      <a routerLink="/admin/operators" class="back-link">← All operators</a>
+      <header class="admin-page-head">
+        <h1>{{ detail.companyName }}</h1>
+        <p class="admin-lead">
+          Status: <span class="badge" [class.badge-success]="statusU(detail.status) === 'APPROVED'" [class.badge-warning]="statusU(detail.status) === 'PENDING'" [class.badge-danger]="statusU(detail.status) === 'REJECTED'">{{ detail.status }}</span>
+          · Requested <strong>{{ detail.createdAt | date: 'medium' }}</strong>
+        </p>
+      </header>
+      @if (detail.owner) {
+        <section class="card detail-block">
+          <h2>Owner</h2>
+          <p><strong>{{ detail.owner.name }}</strong> · {{ detail.owner.email }}</p>
+          <p class="muted">Role: {{ detail.owner.role }}</p>
+        </section>
+      }
+      <section class="card detail-block">
+        <h2>Buses ({{ detail.buses?.length || 0 }})</h2>
+        <p class="muted">Deactivate a bus to remove it from search. The operator receives an email with your reason.</p>
+        @if (!(detail.buses?.length)) {
+          <p>No buses yet.</p>
+        } @else {
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Number</th>
+                  <th>Route</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (bus of detail.buses || []; track bus.id) {
+                  <tr>
+                    <td><strong>{{ bus.busNumber }}</strong></td>
+                    <td>{{ bus.source }} → {{ bus.destination }}</td>
+                    <td><span class="badge" [class.badge-success]="statusU(bus.status) === 'ACTIVE'" [class.badge-warning]="statusU(bus.status) === 'PENDING_APPROVAL'" [class.badge-danger]="statusU(bus.status) === 'INACTIVE'">{{ bus.status }}</span></td>
+                    <td>
+                      @if (statusU(bus.status) !== 'INACTIVE') {
+                        <button type="button" class="btn btn-danger btn-sm" (click)="deactivateBus(bus.id, bus.busNumber)" [disabled]="acting === bus.id">
+                          @if (acting === bus.id) { <span class="spinner"></span> } @else { Deactivate }
+                        </button>
+                      } @else {
+                        <span class="muted">Inactive</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
+  </div>
+</div>

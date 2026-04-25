@@ -1,0 +1,23 @@
+<nav class="admin-subnav">
+  <div class="container admin-subnav-inner">
+    <a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
+    <a routerLink="/admin/requests/buses" routerLinkActive="active">
+      Bus requests
+      @if (pendingBusApprovals > 0) { <span class="tab-badge">{{ pendingBusApprovals }}</span> }
+    </a>
+    <a routerLink="/admin/requests/operators" routerLinkActive="active">
+      Operator requests
+      @if (pendingOperators > 0) { <span class="tab-badge">{{ pendingOperators }}</span> }
+    </a>
+    <a routerLink="/admin/requests/route-changes" routerLinkActive="active">Route changes</a>
+    <a routerLink="/admin/requests/reactivations" routerLinkActive="active">
+      Reactivations
+      @if (pendingReactivations > 0) { <span class="tab-badge">{{ pendingReactivations }}</span> }
+    </a>
+    <a routerLink="/admin/operators" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">All operators</a>
+    <a routerLink="/admin/routes" routerLinkActive="active">Routes</a>
+    <span class="tab-health" [class.tab-health--good]="!loadingCounts && totalPending() === 0">
+      @if (loadingCounts) { Checking... } @else if (totalPending() === 0) { No issues } @else { {{ totalPending() }} pending }
+    </span>
+  </div>
+</nav>
