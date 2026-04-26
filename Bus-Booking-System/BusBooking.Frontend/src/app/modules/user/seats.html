@@ -2,11 +2,22 @@
   @if (loading) {
     <div class="page-loader"><div class="spinner"></div></div>
   } @else {
+    <nav class="breadcrumb">
+      <a routerLink="/user/search">Search</a>
+      <span class="sep">/</span>
+      <span class="current">Choose seats</span>
+    </nav>
+
     <div class="seats-layout">
       <!-- Left: Seat Grid -->
       <div class="seat-panel card">
         <div class="panel-header">
-          <h3>Select Your Seats</h3>
+          <div>
+            <h3>Select your seats</h3>
+            @if (travelDate) {
+              <p class="travel-hint">Travel date: <strong>{{ travelDateLabel }}</strong></p>
+            }
+          </div>
           @if (locked) {
             <div class="timer-badge">⏱ {{ timerDisplay }}</div>
           }
@@ -18,25 +29,33 @@
           <span class="legend-item"><span class="legend-dot booked"></span> Booked</span>
         </div>
         <div class="bus-frame">
-          <div class="steering">🚌 Front</div>
+          <div class="steering">Front of bus</div>
           <div class="seat-grid">
-            @for (seat of seats; track seat.id) {
-              <button
-                class="seat"
-                [class.available]="seat.status === 'AVAILABLE' && !isSelected(seat)"
-                [class.selected]="isSelected(seat)"
-                [class.locked]="seat.status === 'LOCKED'"
-                [class.booked]="seat.status === 'BOOKED'"
-                [disabled]="seat.status !== 'AVAILABLE' || locked"
-                (click)="toggleSeat(seat)">
-                {{ seat.seatNumber }}
-              </button>
+            @for (seat of layoutSeats; track $index) {
+              @if (seat) {
+                <button
+                  class="seat"
+                  [class.available]="seat.status === 'AVAILABLE' && !isSelected(seat)"
+                  [class.selected]="isSelected(seat)"
+                  [class.locked]="seat.status === 'LOCKED'"
+                  [class.booked]="seat.status === 'BOOKED'"
+                  [disabled]="seat.status !== 'AVAILABLE' || (locked && !isSelected(seat))"
+                  (click)="toggleSeat(seat)">
+                  {{ seat.seatNumber }}
+                </button>
+              } @else {
+                <div class="aisle"></div>
+              }
             }
           </div>
         </div>
         @if (!locked) {
           <button class="btn btn-primary btn-block btn-lg" (click)="lockSeats()" [disabled]="locking || selectedSeats.length === 0">
-            @if (locking) { <span class="spinner"></span> } @else { Lock {{ selectedSeats.length }} Seat(s) }
+            @if (locking) { <span class="spinner"></span> } @else { Lock {{ selectedSeats.length }} seat(s) }
+          </button>
+        } @else {
+          <button class="btn btn-outline btn-block" (click)="resetSelection()">
+            Cancel and select again
           </button>
         }
       </div>
@@ -45,7 +64,10 @@
       @if (step === 'details') {
         <div class="details-panel card">
           <div class="panel-header">
-            <h3>Passenger Details</h3>
+            <div>
+              <h3>Passenger details</h3>
+              <p class="travel-hint muted">Next: review fare and pay on the payment page.</p>
+            </div>
             <div class="timer-badge">⏱ {{ timerDisplay }}</div>
           </div>
           @for (p of passengers; track $index; let i = $index) {
@@ -68,11 +90,15 @@
                     <option value="O">Other</option>
                   </select>
                 </div>
+                <div class="form-group">
+                  <label>Phone</label>
+                  <input class="form-control" type="tel" [(ngModel)]="p.phone" placeholder="Phone number">
+                </div>
               </div>
             </div>
           }
-          <button class="btn btn-primary btn-block btn-lg" (click)="confirmBooking()" [disabled]="confirming">
-            @if (confirming) { <span class="spinner"></span> Processing Payment... } @else { Confirm & Pay }
+          <button type="button" class="btn btn-primary btn-block btn-lg" (click)="proceedToPayment()">
+            Continue to payment
           </button>
         </div>
       }

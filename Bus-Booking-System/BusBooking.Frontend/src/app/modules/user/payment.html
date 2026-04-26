@@ -1,0 +1,136 @@
+<div class="pay-page">
+  <div class="container pay-inner">
+    <section class="pay-hero">
+      <div class="pay-hero-copy">
+        <p class="pay-hero-kicker">Secure checkout</p>
+        <h2>Almost there. Confirm and travel stress-free.</h2>
+      </div>
+      <img
+        src="https://images.unsplash.com/photo-1464219789935-c2d9d9aba644?auto=format&fit=crop&w=1000&q=80"
+        alt="Traveler with luggage at bus station"
+        loading="lazy"
+      />
+    </section>
+
+    @if (loading) {
+      <div class="page-loader"><div class="spinner"></div></div>
+    } @else if (step === 'review' || step === 'processing') {
+      <nav class="breadcrumb">
+        <a routerLink="/user/search">Search</a>
+        <span class="sep">/</span>
+        <a [routerLink]="['/user/seats', checkout?.busId]">Seats</a>
+        <span class="sep">/</span>
+        <span class="current">Payment</span>
+      </nav>
+
+      <div class="pay-grid">
+        <section class="card pay-main">
+          <h1>Review &amp; pay</h1>
+          <p class="lead">Confirm your trip and fare below, then proceed to our secure mock checkout.</p>
+
+          @if (payError) {
+            <div class="alert alert-error">Something went wrong while confirming your booking. Your seat hold may have expired — try again from seat selection.</div>
+          }
+
+          <div class="trip-block">
+            <div class="trip-head">
+              <div>
+                <span class="muted">Journey</span>
+                <h2 class="route-title">{{ bus?.source }} <span class="arrow">→</span> {{ bus?.destination }}</h2>
+              </div>
+              <span class="badge badge-brand">{{ bus?.operatorName }}</span>
+            </div>
+            <div class="trip-meta">
+              <div class="meta-item">
+                <span class="muted">Departure day</span>
+                <strong>{{ travelDateLabel() }}</strong>
+              </div>
+              <div class="meta-item">
+                <span class="muted">Bus</span>
+                <strong>{{ bus?.busNumber }}</strong>
+              </div>
+              <div class="meta-item">
+                <span class="muted">Leaves at</span>
+                <strong>{{ bus?.departureTime ? (bus!.departureTime | date: 'shortTime') : '—' }}</strong>
+              </div>
+              <div class="meta-item">
+                <span class="muted">Arrives</span>
+                <strong>{{ bus?.arrivalTime ? (bus!.arrivalTime | date: 'shortTime') : '—' }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="block-title">Passengers</h3>
+          <ul class="pax-list">
+            @for (s of checkout!.seats; track s.id; let i = $index) {
+              <li class="pax-row">
+                <span class="seat-pill">Seat {{ s.seatNumber }}</span>
+                <div class="pax-detail">
+                  <strong>{{ checkout!.passengers[i].name }}</strong>
+                  <span class="muted">{{ checkout!.passengers[i].age }} yrs · {{ checkout!.passengers[i].gender }} · {{ checkout!.passengers[i].phone }}</span>
+                </div>
+              </li>
+            }
+          </ul>
+
+          <div class="email-note card card-soft">
+            <span class="muted">Confirmation will be sent to</span>
+            <strong>{{ auth.getEmail() || 'your registered email' }}</strong>
+          </div>
+        </section>
+
+        <aside class="card pay-side">
+          <h3>Fare summary</h3>
+          <div class="fare-rows">
+            <div class="fare-row">
+              <span>Fare ({{ seatCount }} × ₹{{ formatMoney(bus?.basePrice ?? 0) }})</span>
+              <span>₹{{ formatMoney(subtotal) }}</span>
+            </div>
+            <div class="fare-row">
+              <span>Platform fee (5%)</span>
+              <span>₹{{ formatMoney(fees) }}</span>
+            </div>
+            <p class="fare-hint muted">Same breakdown as on the search results page.</p>
+            <div class="fare-row total">
+              <span>Total payable</span>
+              <span>₹{{ formatMoney(grandTotal) }}</span>
+            </div>  
+          </div>
+
+          @if (step === 'review') {
+            <button type="button" class="btn btn-primary btn-block btn-lg" (click)="proceedToPay()">
+              Proceed to pay
+            </button>
+            <a class="btn btn-ghost btn-block" [routerLink]="['/user/seats', checkout?.busId]">Back to seats</a>
+          } @else {
+            <div class="processing-block">
+              <div class="spinner"></div>
+              <p>Processing mock payment…</p>
+              <span class="muted">This simulates a gateway. Please wait.</span>
+            </div>
+          }
+        </aside>
+      </div>
+    } @else {
+      <div class="success-wrap">
+        <div class="card success-card">
+          <div class="success-icon" aria-hidden="true">✓</div>
+          <h1>Booking confirmed</h1>
+          <p class="success-lead">
+            Your payment was successful. A confirmation with trip details has been sent to
+            <strong>{{ auth.getEmail() || 'your email' }}</strong>.
+          </p>
+          <div class="booking-id-box">
+            <span>Booking reference</span>
+            <strong>{{ bookingId | slice: 0 : 8 | uppercase }}</strong>
+          </div>
+          <div class="success-actions">
+            <button type="button" class="btn btn-primary btn-lg" (click)="downloadBill()">Download bill</button>
+            <button type="button" class="btn btn-outline" (click)="goDashboard()">My trips</button>
+            <button type="button" class="btn btn-ghost" (click)="goSearch()">Book another</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

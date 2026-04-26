@@ -1,13 +1,53 @@
 <div class="dash-page container">
   <h2>Become a Bus Operator</h2>
-  <p style="color:var(--slate); margin-bottom:24px;">Apply to list your buses on GO-BUS. An admin will review your application.</p>
-  <div class="card" style="padding:28px; max-width:500px;">
-    <div class="form-group">
-      <label>Company Name</label>
-      <input class="form-control" [(ngModel)]="companyName" placeholder="e.g. Presidio Premium Travels">
-    </div>
-    <button class="btn btn-primary btn-block" (click)="submit()" [disabled]="loading">
-      @if (loading) { <span class="spinner"></span> } @else { Submit Application }
-    </button>
-  </div>
+  <p style="color:var(--slate); margin-bottom:24px;">
+    Apply to list your buses on GO-BUS. An admin will review your application.
+  </p>
+
+  @if (statusLoading) {
+    <div class="page-loader"><div class="spinner"></div></div>
+  }
+
+  @if (!statusLoading) {
+
+    <!-- FIX: Show status card if already applied — prevents re-applying confusion -->
+    @if (existingStatus) {
+      <div class="card" style="padding:28px; max-width:500px;">
+        <div class="status-badge" [style.color]="getStatusColor()">
+          ●
+          @if (existingStatus === 'PENDING')  { Under Review }
+          @if (existingStatus === 'APPROVED') { Approved }
+          @if (existingStatus === 'REJECTED') { Rejected }
+        </div>
+        <h3 style="margin-top:8px;">{{ existingCompanyName }}</h3>
+        <p style="color:var(--slate); margin-top:12px;">{{ getStatusMessage() }}</p>
+
+        @if (existingStatus === 'APPROVED') {
+          <button class="btn btn-primary btn-block" style="margin-top:20px"
+            (click)="router.navigate(['/operator/dashboard'])">
+            Go to Operator Dashboard
+          </button>
+        }
+        @if (existingStatus === 'REJECTED') {
+          <a href="mailto:support@ridebus.com" class="btn btn-outline btn-block" style="margin-top:20px">
+            Contact Support
+          </a>
+        }
+      </div>
+    }
+
+    <!-- Show form only if no existing application -->
+    @if (!existingStatus) {
+      <div class="card" style="padding:28px; max-width:500px;">
+        <div class="form-group">
+          <label>Company Name</label>
+          <input class="form-control" [(ngModel)]="companyName"
+            placeholder="e.g. Presidio Premium Travels">
+        </div>
+        <button class="btn btn-primary btn-block" (click)="submit()" [disabled]="loading">
+          @if (loading) { <span class="spinner"></span> } @else { Submit Application }
+        </button>
+      </div>
+    }
+  }
 </div>

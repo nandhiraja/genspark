@@ -1,68 +1,167 @@
 <div class="hero">
-  <div class="container">
+  <div class="container hero-inner">
+    <p class="hero-kicker">Book in minutes</p>
     <h1>Where to next?</h1>
-    <p>Premium travel experiences across 200+ cities.</p>
+    <p class="hero-sub">Search routes, compare operators, and lock seats with a clear, calm checkout.</p>
+    <div class="hero-chips">
+      <span>Live route discovery</span>
+      <span>Fast seat selection</span>
+      <span>Instant confirmation</span>
+    </div>
   </div>
 </div>
 
-<div class="search-card container">
-  <div class="field">
+<div class="search-card container" (click)="closeDropdowns()">
+  <div class="field" (click)="$event.stopPropagation()">
     <label>From</label>
-    <input type="text" [(ngModel)]="source" placeholder="Source city" class="search-input">
+    <div class="autocomplete-wrap">
+      <input
+        type="text"
+        [(ngModel)]="source"
+        (input)="onSourceInput()"
+        (focus)="onSourceInput()"
+        placeholder="City or stop"
+        class="search-input"
+        autocomplete="off"
+      />
+      @if (showSourceDropdown) {
+        <ul class="dropdown-list">
+          @for (city of filteredSources; track city) {
+            <li (mousedown)="selectSource(city)">{{ city }}</li>
+          }
+        </ul>
+      }
+    </div>
   </div>
+
   <div class="divider"></div>
-  <div class="field">
+
+  <div class="field" (click)="$event.stopPropagation()">
     <label>To</label>
-    <input type="text" [(ngModel)]="destination" placeholder="Destination city" class="search-input">
+    <div class="autocomplete-wrap">
+      <input
+        type="text"
+        [(ngModel)]="destination"
+        (input)="onDestInput()"
+        (focus)="onDestInput()"
+        placeholder="City or stop"
+        class="search-input"
+        autocomplete="off"
+      />
+      @if (showDestDropdown) {
+        <ul class="dropdown-list">
+          @for (city of filteredDestinations; track city) {
+            <li (mousedown)="selectDestination(city)">{{ city }}</li>
+          }
+        </ul>
+      }
+    </div>
   </div>
+
   <div class="divider"></div>
+
   <div class="field">
-    <label>Date</label>
-    <input type="date" [(ngModel)]="date" class="search-input">
+    <label>Departure date</label>
+    <input
+      type="date"
+      [(ngModel)]="date"
+      [min]="minDate"
+      class="search-input"
+    />
   </div>
-  <button class="btn-go" (click)="search()" [disabled]="loading">
-    @if (loading) { <span class="spinner"></span> } @else { Find Buses }
+
+  <button type="button" class="btn-go" (click)="search()" [disabled]="loading">
+    @if (loading) { <span class="spinner"></span> } @else { Search buses }
   </button>
 </div>
 
 <div class="results container">
+  @if (!searched && buses.length > 0) {
+    <div class="results-head">
+      <h2>Available buses</h2>
+      <p class="results-sub">Upcoming departures — tap a card to choose seats.</p>
+    </div>
+  }
+  @if (searched && buses.length > 0) {
+    <div class="results-head">
+      <h2>Results for your trip</h2>
+      <p class="results-sub">Showing buses matching your route and date.</p>
+    </div>
+  }
+
   @if (loading) {
     <div class="page-loader"><div class="spinner"></div></div>
   }
-  @if (!loading && searched && buses.length === 0) {
-    <div class="empty-state">
-      <p>😕</p>
-      <h3>No buses found</h3>
-      <p>Try a different route or date</p>
-    </div>
-  }
+
   @for (bus of buses; track bus.id) {
-    <div class="bus-card">
-      <div class="bus-info">
-        <div class="operator-name">{{ bus.operatorName }}</div>
-        <div class="bus-number">{{ bus.busNumber }}</div>
-        <div class="bus-route">{{ source }} → {{ destination }}</div>
-      </div>
-      <div class="bus-timing">
-        <div class="time-main">
-          <span>{{ formatTime(bus.startTime) }}</span>
-          <span class="duration">{{ getDuration(bus.startTime, bus.endTime) }}</span>
-          <span>{{ formatTime(bus.endTime) }}</span>
+    <article class="bus-card" (click)="selectBus(bus.id)">
+      <div class="bus-card-body">
+        <header class="bus-card-top">
+          <div class="operator-block">
+            <span class="op-name">{{ bus.operatorName }}</span>
+            <span class="bus-reg">{{ bus.busNumber }}</span>
+          </div>
+          <span class="chip chip-muted">AC Sleeper</span>
+        </header>
+
+        <div class="bus-card-mid">
+          <div class="departure-day">
+            <span class="dep-label">Departure day</span>
+            <span class="dep-value">{{ formatDepartureDay(bus.startTime) }}</span>
+          </div>
+
+          <div class="route-timeline">
+            <div class="rt-col">
+              <span class="rt-time">{{ formatTime(bus.startTime) }}</span>
+              <span class="rt-city">{{ bus.source }}</span>
+            </div>
+            <div class="rt-track">
+              <span class="rt-duration">{{ getDuration(bus.startTime, bus.endTime) }}</span>
+              <span class="rt-line"></span>
+            </div>
+            <div class="rt-col rt-col-end">
+              <span class="rt-time">{{ formatTime(bus.endTime) }}</span>
+              <span class="rt-city">{{ bus.destination }}</span>
+            </div>
+          </div>
         </div>
-        <div class="date-sub">{{ bus.startTime | date:'mediumDate' }}</div>
+        @if (bus.sourceBoardingPoint || bus.destinationBoardingPoint) {
+          <div class="boarding-row">
+            <div class="boarding-col">
+              <span class="boarding-label">Boarding (Source)</span>
+              <span class="boarding-value">{{ bus.sourceBoardingPoint?.label || 'Main pickup point' }}</span>
+              @if (bus.sourceBoardingPoint?.addressLine) { <span class="boarding-address">{{ bus.sourceBoardingPoint.addressLine }}</span> }
+            </div>
+            <div class="boarding-col">
+              <span class="boarding-label">Drop Point (Destination)</span>
+              <span class="boarding-value">{{ bus.destinationBoardingPoint?.label || 'Main drop point' }}</span>
+              @if (bus.destinationBoardingPoint?.addressLine) { <span class="boarding-address">{{ bus.destinationBoardingPoint.addressLine }}</span> }
+            </div>
+          </div>
+        }
       </div>
-      <div class="bus-price">
-        <div class="price">₹{{ bus.price }}</div>
-        <div class="seats-left">{{ bus.availableSeats }} seats left</div>
-        <button class="btn btn-primary" (click)="$event.stopPropagation(); selectBus(bus.id)">View Seats</button>
-      </div>
-    </div>
+
+      <aside class="bus-card-side">
+        <div class="fare-block">
+          <span class="fare-from">from</span>
+          <div class="fare-amount"><span class="rupee">₹</span>{{ bus.totalPrice }}</div>
+          <span class="fare-seat">per seat · incl. fees</span>
+        </div>
+        <div class="seats-pill">{{ bus.availableSeats }} seats left</div>
+        <button
+          type="button"
+          class="btn btn-primary btn-block"
+          (click)="$event.stopPropagation(); selectBus(bus.id)">
+          Select seats
+        </button>
+      </aside>
+    </article>
   } @empty {
     @if (searched && !loading) {
       <div class="empty-state">
-        <div class="empty-icon">🚌</div>
+        <div class="empty-icon" aria-hidden="true">🚌</div>
         <h3>No buses found</h3>
-        <p>Try different cities or another date.</p>
+        <p>Try another date or nearby cities.</p>
       </div>
     }
   }

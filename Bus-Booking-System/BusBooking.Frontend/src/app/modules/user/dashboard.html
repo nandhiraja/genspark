@@ -1,32 +1,154 @@
 <div class="dash-page container">
-  <div class="dash-header">
-    <h2>My Trips</h2>
-    <div class="stat-card">
-      <span class="stat-label">Total Spent</span>
-      <span class="stat-value">₹{{ totalSpent }}</span>
+  <section class="dash-hero">
+    <div class="dash-hero-text">
+      <p class="dash-hero-kicker">Traveler space</p>
+      <h2>Plan smarter trips, every time</h2>
+      <p>Track your upcoming rides and quickly continue your next booking flow.</p>
     </div>
-  </div>
+    <img
+      src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=900&q=80"
+      alt="Intercity bus at sunset"
+      loading="lazy"
+    />
+  </section>
+
+  <header class="dash-header">
+    <div class="dash-title-block">
+      <h1>My trips</h1>
+      <p class="dash-sub">Upcoming journeys, travel history, and cancelled bookings in one place.</p>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Total spent (confirmed)</span>
+      <span class="stat-value">₹{{ totalSpent | number: '1.0-2' }}</span>
+    </div>
+  </header>
+
   @if (loading) {
     <div class="page-loader"><div class="spinner"></div></div>
-  }
-  @if (!loading && bookings.length === 0) {
-    <div class="empty-state"><h3>No bookings yet</h3><p>Search for buses and book your first trip!</p></div>
-  }
-  @for (b of bookings; track b.id) {
-    <div class="booking-card card">
-      <div class="booking-route">
-        <span class="route-city">{{ b.source }}</span>
-        <span class="route-arrow">→</span>
-        <span class="route-city">{{ b.destination }}</span>
+  } @else {
+    @if (bookings.length === 0) {
+      <div class="empty-state card">
+        <h3>No bookings yet</h3>
+        <p>Search for a route, pick seats, and complete payment — your trips will show up here right away.</p>
+        <a routerLink="/user/search" class="btn btn-primary">Search buses</a>
       </div>
-      <div class="booking-meta">
-        <span>🚌 {{ b.busNumber }}</span>
-        <span>₹{{ b.totalAmount }}</span>
-        <span class="badge" [class.badge-success]="b.status === 'CONFIRMED'" [class.badge-danger]="b.status === 'CANCELLED'" [class.badge-warning]="b.status === 'PENDING'">{{ b.status }}</span>
-      </div>
-      @if (b.status === 'CONFIRMED') {
-        <button class="btn btn-outline btn-sm" (click)="cancel(b.id)">Cancel Booking</button>
+    } @else {
+      @if (upcomingTrips.length > 0) {
+        <section class="dash-section">
+          <div class="section-head">
+            <h2>Upcoming</h2>
+            <span class="section-count">{{ upcomingTrips.length }}</span>
+          </div>
+          <div class="trip-list">
+            @for (b of upcomingTrips; track b.id) {
+              <article class="trip-card trip-card--upcoming card">
+                <div class="trip-card-main">
+                  <div class="trip-route">
+                    <span class="city">{{ b.source }}</span>
+                    <span class="arrow" aria-hidden="true">→</span>
+                    <span class="city">{{ b.destination }}</span>
+                  </div>
+                  <div class="trip-meta">
+                    <span class="meta-pill">Bus {{ b.busNumber }}</span>
+                    <span class="meta-pill meta-pill--time">{{ formatDate(b.departureTime) }}</span>
+                    <span class="meta-pill meta-pill--fare">₹{{ b.totalAmount | number: '1.0-2' }}</span>
+                    <span class="badge badge-success">{{ b.status }}</span>
+                  </div>
+                  <p class="ref-line">Ref: <code>{{ bookingRef(b.id) }}</code></p>
+                  @if (seatsLabel(b)) {
+                    <p class="seat-line">{{ seatsLabel(b) }}</p>
+                  }
+                  @if (passengersLabel(b)) {
+                    <p class="pax-line">Passengers: {{ passengersLabel(b) }}</p>
+                  }
+                </div>
+                <div class="trip-card-actions">
+                  <button type="button" class="btn btn-outline btn-sm" (click)="cancel(b.id, b.departureTime)">Cancel booking</button>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
       }
-    </div>
+
+      @if (pastTrips.length > 0) {
+        <section class="dash-section">
+          <div class="section-head">
+            <h2>Travel history</h2>
+            <span class="section-count section-count--muted">{{ pastTrips.length }}</span>
+          </div>
+          <p class="section-desc">Completed trips (departure time has passed).</p>
+          <div class="trip-list trip-list--past">
+            @for (b of pastTrips; track b.id) {
+              <article class="trip-card trip-card--past card">
+                <div class="trip-card-main">
+                  <div class="trip-route">
+                    <span class="city">{{ b.source }}</span>
+                    <span class="arrow" aria-hidden="true">→</span>
+                    <span class="city">{{ b.destination }}</span>
+                  </div>
+                  <div class="trip-meta">
+                    <span class="meta-pill">Bus {{ b.busNumber }}</span>
+                    <span class="meta-pill meta-pill--time">{{ formatDate(b.departureTime) }}</span>
+                    <span class="meta-pill meta-pill--fare">₹{{ b.totalAmount | number: '1.0-2' }}</span>
+                    <span class="badge badge-brand">Completed</span>
+                  </div>
+                  <p class="ref-line">Ref: <code>{{ bookingRef(b.id) }}</code></p>
+                  @if (seatsLabel(b)) {
+                    <p class="seat-line">{{ seatsLabel(b) }}</p>
+                  }
+                  @if (passengersLabel(b)) {
+                    <p class="pax-line">Passengers: {{ passengersLabel(b) }}</p>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      @if (cancelledTrips.length > 0) {
+        <section class="dash-section">
+          <div class="section-head">
+            <h2>Cancelled</h2>
+            <span class="section-count section-count--danger">{{ cancelledTrips.length }}</span>
+          </div>
+          <div class="trip-list trip-list--cancelled">
+            @for (b of cancelledTrips; track b.id) {
+              <article class="trip-card trip-card--cancelled card">
+                <div class="trip-card-main">
+                  <div class="trip-route">
+                    <span class="city">{{ b.source }}</span>
+                    <span class="arrow" aria-hidden="true">→</span>
+                    <span class="city">{{ b.destination }}</span>
+                  </div>
+                  <div class="trip-meta">
+                    <span class="meta-pill">Bus {{ b.busNumber }}</span>
+                    <span class="meta-pill meta-pill--time">{{ formatDate(b.departureTime) }}</span>
+                    <span class="meta-pill meta-pill--fare">₹{{ b.totalAmount | number: '1.0-2' }}</span>
+                    <span class="badge badge-danger">{{ b.status }}</span>
+                  </div>
+                  <p class="ref-line">Ref: <code>{{ bookingRef(b.id) }}</code></p>
+                  @if (seatsLabel(b)) {
+                    <p class="seat-line">{{ seatsLabel(b) }}</p>
+                  }
+                  @if (passengersLabel(b)) {
+                    <p class="pax-line">Passengers: {{ passengersLabel(b) }}</p>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      @if (upcomingTrips.length === 0 && pastTrips.length === 0 && cancelledTrips.length === 0) {
+        <div class="empty-state card">
+          <h3>No trips to show</h3>
+          <p>We could not group your bookings. Try refreshing the page.</p>
+          <button type="button" class="btn btn-primary" (click)="loadDashboard()">Refresh</button>
+        </div>
+      }
+    }
   }
 </div>
