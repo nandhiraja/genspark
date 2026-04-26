@@ -1,10 +1,221 @@
-.op-page { padding: 40px 0 60px; }
-.op-page h2 { margin-bottom: 24px; }
-.op-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.op-stat { padding: 24px; }
-.op-stat .label { font-size: 0.8rem; color: var(--slate); text-transform: uppercase; }
-.op-stat .value { font-size: 2rem; font-weight: 800; margin-top: 4px; }
+.op-page {
+  padding: 34px 0 68px;
+}
 
-.bus-manage-card { padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-.bus-manage-card .info h4 { margin-bottom: 4px; }
-.bus-manage-card .info span { font-size: 0.85rem; color: var(--slate); }
+.op-page h2 {
+  margin-bottom: 8px;
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.op-help {
+  color: var(--slate);
+  margin-bottom: 18px;
+  max-width: 78ch;
+  line-height: 1.5;
+  font-size: 0.93rem;
+}
+
+.op-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.op-stat {
+  padding: 20px;
+  min-height: 122px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.op-stat .label {
+  font-size: 0.72rem;
+  color: var(--slate);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.op-stat .value {
+  font-size: 1.85rem;
+  font-weight: 800;
+  margin-top: 10px;
+  letter-spacing: -0.02em;
+  color: var(--brand-dark);
+}
+
+.op-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.op-grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.op-form-card {
+  padding: 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.op-form-card .form-group label {
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.op-note-card,
+.op-table-card {
+  padding: 20px;
+  margin-top: 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.op-note-card h3,
+.op-table-card h3 {
+  margin-bottom: 10px;
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.op-table-wrap {
+  overflow-x: auto;
+}
+
+.op-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.op-table th,
+.op-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.op-table th {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--slate);
+  font-weight: 700;
+}
+
+.op-table .num {
+  text-align: right;
+}
+
+.op-empty-cell {
+  color: var(--slate);
+}
+
+.op-note-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.op-note-card li {
+  margin-bottom: 6px;
+  color: var(--dark);
+  font-size: 0.9rem;
+}
+
+.op-empty {
+  color: var(--slate);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.op-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.op-list {
+  margin-top: 10px;
+}
+
+.bus-manage-card {
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.bus-manage-card--wrap {
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.bus-manage-card .info h4 {
+  margin-bottom: 4px;
+  font-size: 1rem;
+}
+
+.bus-manage-card .info span {
+  font-size: 0.84rem;
+  color: var(--slate);
+  display: block;
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+.op-change-card {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #f8faff;
+}
+
+.op-change-card h4 {
+  margin-bottom: 10px;
+  font-size: 0.98rem;
+}
+
+.op-warning {
+  width: 100%;
+  font-size: 0.83rem;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.op-reason {
+  margin-top: 7px;
+  color: #78350f;
+  line-height: 1.45;
+}
+
+@media (max-width: 960px) {
+
+  .op-grid2,
+  .op-grid3 {
+    grid-template-columns: 1fr;
+  }
+
+  .op-page {
+    padding-top: 24px;
+  }
+}

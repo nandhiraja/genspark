@@ -1,14 +1,82 @@
 <div class="op-page container">
   <h2>Operator Dashboard</h2>
-  @if (loading) { <div class="page-loader"><div class="spinner"></div></div> }
-  @if (!loading && bookings.length === 0) { <p style="color:var(--slate)">No bookings yet for your buses.</p> }
-  @for (b of bookings; track b.id) {
-    <div class="card bus-manage-card">
-      <div class="info">
-        <h4>Booking #{{ b.id | slice:0:8 }}</h4>
-        <span>₹{{ b.totalAmount }} · {{ b.status }}</span>
+  @if (loading) { <div class="page-loader"><div class="spinner"></div></div> } @else {
+    <div class="op-grid">
+      <div class="card op-stat">
+        <div class="label">Overall Revenue</div>
+        <div class="value">₹{{ (revenue?.totalRevenue ?? 0) | number:'1.0-0' }}</div>
       </div>
-      <span class="badge" [class.badge-success]="b.status === 'CONFIRMED'" [class.badge-danger]="b.status === 'CANCELLED'">{{ b.status }}</span>
+      <div class="card op-stat">
+        <div class="label">Confirmed Bookings</div>
+        <div class="value">{{ bookings.length }}</div>
+      </div>
+      <div class="card op-stat">
+        <div class="label">Active Buses</div>
+        <div class="value">{{ revenue?.activeBuses ?? 0 }}</div>
+      </div>
+      <div class="card op-stat">
+        <div class="label">Pending Buses</div>
+        <div class="value">{{ revenue?.pendingBuses ?? 0 }}</div>
+      </div>
+    </div>
+
+    <div class="card op-note-card">
+      <h3>Notifications</h3>
+      @if (notifications.length === 0) {
+        <p class="op-empty">No new notifications.</p>
+      } @else {
+        <ul>
+          @for (n of notifications; track n) { <li>{{ n }}</li> }
+        </ul>
+      }
+    </div>
+
+    <div class="card op-table-card">
+      <h3>Bus-wise Revenue</h3>
+      <div class="op-table-wrap">
+        <table class="op-table">
+          <thead>
+            <tr>
+              <th>Bus</th>
+              <th>Route</th>
+              <th>Status</th>
+              <th>Bookings</th>
+              <th class="num">Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of revenue?.busBreakdown || []; track row.id) {
+              <tr>
+                <td>{{ row.busNumber }}</td>
+                <td>{{ row.source }} → {{ row.destination }}</td>
+                <td>{{ row.status }}</td>
+                <td>{{ row.totalBookings }}</td>
+                <td class="num">₹{{ row.revenue | number:'1.0-0' }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="5" class="op-empty-cell">No revenue rows yet.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card op-table-card">
+      <h3>Recent Bookings</h3>
+      @if (bookings.length === 0) {
+        <p class="op-empty">No bookings yet for your buses.</p>
+      } @else {
+        @for (b of bookings; track b.id) {
+          <div class="bus-manage-card">
+            <div class="info">
+              <h4>Booking #{{ b.id | slice:0:8 }}</h4>
+              <span>{{ b.busNumber }} · {{ b.source }} → {{ b.destination }}</span>
+              <span>₹{{ b.totalAmount }} · {{ b.passengerCount }} passengers</span>
+            </div>
+            <span class="badge" [class.badge-success]="b.status === 'CONFIRMED'" [class.badge-danger]="b.status === 'CANCELLED'">{{ b.status }}</span>
+          </div>
+        }
+      }
     </div>
   }
 </div>

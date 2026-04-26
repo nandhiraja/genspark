@@ -1,0 +1,54 @@
+<div class="op-page container">
+  <h2>Boarding Points</h2>
+  <p class="op-help">Create boarding points city-wise. When adding/changing buses, pick source and destination points from this list.</p>
+
+  <div class="card op-form-card">
+    <div class="op-grid3">
+      <div class="form-group">
+        <label>City</label>
+        <select class="form-control" [(ngModel)]="city">
+          <option value="">Select city</option>
+          @for (c of cities; track c.name) {
+            <option [value]="c.name">{{ c.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Point Label</label>
+        <input class="form-control" [(ngModel)]="label" placeholder="e.g. Guindy Bus Stand">
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <input class="form-control" [(ngModel)]="addressLine" placeholder="Full boarding address">
+      </div>
+    </div>
+    <div class="op-actions">
+      <button class="btn btn-primary" (click)="save()">{{ editingId ? 'Update point' : 'Add point' }}</button>
+      @if (editingId) {
+        <button class="btn btn-ghost" (click)="clearForm()">Cancel</button>
+      }
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="page-loader"><div class="spinner"></div></div>
+  } @else if (points.length === 0) {
+    <p class="op-empty">No boarding points yet.</p>
+  } @else {
+    <div class="op-list">
+      @for (p of points; track p.id) {
+        <div class="card bus-manage-card">
+          <div class="info">
+            <h4>{{ p.label }}</h4>
+            <span>{{ p.city }}</span>
+            <span>{{ p.addressLine }}</span>
+          </div>
+          <div class="op-actions">
+            <button class="btn btn-ghost btn-sm" (click)="edit(p)">Edit</button>
+            <button class="btn btn-outline btn-sm" (click)="remove(p)">Remove</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -5,6 +5,12 @@
       <a routerLink="/auth/login" class="nav-link" routerLinkActive="active">Login</a>
       <a routerLink="/auth/register" class="btn btn-primary btn-sm">Sign Up</a>
     }
+    @if (auth.isLoggedIn()) {
+      <div class="nav-user" [attr.title]="auth.getEmail() || ''">
+        <span class="nav-user-name">{{ auth.getDisplayName() }}</span>
+        <span [class]="roleBadgeClass()">{{ roleLabel() }}</span>
+      </div>
+    }
     @if (auth.isLoggedIn() && auth.getRole() === 'USER') {
       <a routerLink="/user/search" class="nav-link" routerLinkActive="active">Search</a>
       <a routerLink="/user/dashboard" class="nav-link" routerLinkActive="active">My Trips</a>
@@ -15,14 +21,17 @@
       <a routerLink="/operator/dashboard" class="nav-link" routerLinkActive="active">Dashboard</a>
       <a routerLink="/operator/add-bus" class="nav-link" routerLinkActive="active">Add Bus</a>
       <a routerLink="/operator/manage" class="nav-link" routerLinkActive="active">My Buses</a>
+      <a routerLink="/operator/boarding-points" class="nav-link" routerLinkActive="active">Boarding Points</a>
     }
     @if (auth.isLoggedIn() && auth.getRole() === 'ADMIN') {
-      <a routerLink="/admin/dashboard" class="nav-link" routerLinkActive="active">Dashboard</a>
-      <a routerLink="/admin/operators" class="nav-link" routerLinkActive="active">Operators</a>
+      <a routerLink="/admin/dashboard" class="nav-link" routerLinkActive="active">Admin home</a>
+      <a routerLink="/admin/requests/buses" class="nav-link" routerLinkActive="active">Bus requests</a>
+      <a routerLink="/admin/requests/operators" class="nav-link" routerLinkActive="active">Operator requests</a>
+      <a routerLink="/admin/operators" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Operators</a>
       <a routerLink="/admin/routes" class="nav-link" routerLinkActive="active">Routes</a>
     }
     @if (auth.isLoggedIn()) {
-      <button class="btn btn-ghost btn-sm" (click)="logout()">Logout</button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="logout()">Logout</button>
     }
   </div>
 </nav>

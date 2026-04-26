@@ -24,6 +24,52 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 12px;
+  margin-right: 4px;
+  border-radius: 999px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  max-width: min(240px, 38vw);
+}
+.nav-user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.role-badge {
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+.role-user {
+  background: #eef2ff;
+  color: var(--brand-dark);
+}
+.role-operator {
+  background: var(--warning-light);
+  color: #b45309;
+  border: 1px solid #fcd34d;
+}
+.role-admin {
+  background: var(--danger-light);
+  color: #b91c1c;
+  border: 1px solid #fecaca;
 }
 
 .nav-link {

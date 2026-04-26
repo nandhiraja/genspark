@@ -1,18 +1,88 @@
 <div class="op-page container">
   <h2>Manage My Buses</h2>
-  @if (loading) { <div class="page-loader"><div class="spinner"></div></div> }
-  @if (!loading && buses.length === 0) { <p style="color:var(--slate)">You haven't added any buses yet.</p> }
+  @if (loading) { <div class="page-loader">
+    <div class="spinner"></div>
+  </div> }
+  @if (!loading && buses.length === 0) { <p class="op-empty">You haven't added any buses yet.</p> }
   @for (bus of buses; track bus.id) {
-    <div class="card bus-manage-card">
-      <div class="info">
-        <h4>{{ bus.busNumber }}</h4>
-        <span>{{ bus.source }} → {{ bus.destination }}</span>
-        <span style="margin-left:12px">{{ bus.totalSeats }} seats · ₹{{ bus.price }}</span>
+  <div class="card bus-manage-card bus-manage-card--wrap">
+    <div class="info">
+      <h4>{{ bus.busNumber }}</h4>
+      <span>{{ bus.source }} → {{ bus.destination }}</span>
+      @if (bus.sourceBoardingPoint && bus.destinationBoardingPoint) {
+      <span>{{ bus.sourceBoardingPoint.label }} → {{ bus.destinationBoardingPoint.label }}</span>
+      }
+      <span>{{ bus.totalSeats }} seats · ₹{{ bus.price }}</span>
+    </div>
+    <div class="op-actions">
+      <span class="badge" [class.badge-success]="bus.status === 'ACTIVE'"
+        [class.badge-danger]="bus.status === 'INACTIVE'">{{ bus.status }}</span>
+      @if (bus.hiddenFromSearch) { <span class="badge badge-warning">Hidden from users</span> }
+      @if (bus.adminDeactivated) { <span class="badge badge-danger">Admin deactivated</span> }
+      <button class="btn btn-ghost btn-sm" (click)="toggleStatus(bus)">Toggle</button>
+      <button class="btn btn-danger btn-sm" (click)="deleteBus(bus)">Delete Bus</button>
+      <button class="btn btn-outline btn-sm" (click)="openRouteChange(bus)">Request Route Change</button>
+      @if (bus.adminDeactivated) {
+      <button
+        class="btn btn-sm"
+        [class.btn-primary]="!hasPendingReactivation(bus)"
+        [class.btn-warning]="hasPendingReactivation(bus)"
+        [disabled]="hasPendingReactivation(bus)"
+        (click)="requestReactivation(bus)">
+        {{ hasPendingReactivation(bus) ? 'Reactivation Pending' : 'Request Reactivation' }}
+      </button>
+      }
+    </div>
+    @if (changingBusId === bus.id) {
+    <div class="op-change-card">
+      <h4>Route Change Request</h4>
+      <div class="form-group">
+        <label>New Route</label>
+        <select class="form-control" [(ngModel)]="newRouteId" (ngModelChange)="onNewRouteChanged()">
+          <option value="">Select new route</option>
+          @for (r of routes; track r.id) { <option [value]="r.id">{{ r.source }} → {{ r.destination }}</option> }
+        </select>
       </div>
-      <div style="display:flex; align-items:center; gap:8px">
-        <span class="badge" [class.badge-success]="bus.status === 'ACTIVE'" [class.badge-danger]="bus.status === 'INACTIVE'">{{ bus.status }}</span>
-        <button class="btn btn-ghost btn-sm" (click)="toggleStatus(bus)">Toggle</button>
+      <div class="op-grid2">
+        <div class="form-group">
+          <label>New Source Boarding Point</label>
+          <select class="form-control" [(ngModel)]="newSourceBoardingPointId">
+            <option value="">Select source point</option>
+            @for (p of sourceOptions; track p.id) { <option [value]="p.id">{{ p.label }}</option> }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>New Destination Boarding Point</label>
+          <select class="form-control" [(ngModel)]="newDestinationBoardingPointId">
+            <option value="">Select destination point</option>
+            @for (p of destinationOptions; track p.id) { <option [value]="p.id">{{ p.label }}</option> }
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Reason</label>
+        <input class="form-control" [(ngModel)]="routeReason" placeholder="Optional reason for admin">
+      </div>
+      <div class="op-actions">
+        <button class="btn btn-primary btn-sm" (click)="submitRouteChange(bus)">Submit Request</button>
+        <button class="btn btn-ghost btn-sm" (click)="changingBusId = null">Cancel</button>
       </div>
     </div>
+    }
+    @if (bus.adminDeactivated) {
+    <div class="op-warning">
+      This bus is currently unavailable because it was deactivated by admin.
+      @if (bus.adminDeactivationReason) {
+        <div class="op-reason"><strong>Admin reason:</strong> {{ bus.adminDeactivationReason }}</div>
+      }
+      @if (bus.reactivationRequest?.status === 'REJECTED') {
+        <div class="op-reason"><strong>Reactivation rejected:</strong> {{ bus.reactivationRequest?.adminReason || 'No reason provided by admin.' }}</div>
+      }
+      @if (bus.reactivationRequest?.status === 'PENDING') {
+        <div class="op-reason"><strong>Reactivation request:</strong> Pending admin review.</div>
+      }
+    </div>
+    }
+  </div>
   }
 </div>
