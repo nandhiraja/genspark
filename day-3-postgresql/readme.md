@@ -1,26 +1,6 @@
 # Stored Procedures in PostgreSQL
 ## Notes
 
----
-
-##  Table of Contents
-1. [What is a Stored Procedure?](#1-what-is-a-stored-procedure)
-2. [Why Use Stored Procedures?](#2-why-use-stored-procedures)
-3. [Basic Syntax](#3-basic-syntax)
-4. [Key Parts Explained](#4-key-parts-explained)
-5. [Parameters](#5-parameters)
-6. [Variables (DECLARE)](#6-variables-declare)
-7. [IF / ELSE Conditions](#7-if--else-conditions)
-8. [Exception Handling (Rollback)](#8-exception-handling--rollback)
-9. [Loops](#9-loops)
-10. [RAISE NOTICE vs RAISE EXCEPTION](#10-raise-notice-vs-raise-exception)
-11. [CALL a Procedure](#11-call-a-procedure)
-12. [DROP a Procedure](#12-drop-a-procedure)
-13. [Real Examples from Assignment](#13-real-examples-from-assignment)
-14. [Common Mistakes](#14-common-mistakes)
-15. [Quick Reference Cheatsheet](#15-quick-reference-cheatsheet)
-
----
 
 ## 1. What is a Stored Procedure?
 
@@ -379,68 +359,8 @@ drop procedure update_stock(int, int, smallint);
 
 ---
 
-## 13. Real Examples from Assignment
 
-### Simple — SP1: Insert Customer
-```sql
--- validates inputs → inserts → rollback on error
-create or replace procedure insert_new_customer(
-    customerid character(5), companyname character(40), ...
-)
-language plpgsql as $$
-begin
-    if trim(customerid) = '' then
-        raise exception 'customer id missing';
-    end if;
-    insert into customers(...) values(...);
-    raise notice 'customer added';
-exception
-    when others then
-        raise notice 'rolled back: %', sqlerrm;
-        rollback;
-end; $$;
-```
-
-### Intermediate — SP3: Update Stock
-```sql
--- reads stock → checks if enough → updates → rollback if low
-select unitsinstock into v_stock from products where productid = p_productid;
-if v_stock < p_quantity then
-    raise exception 'stock low: % available', v_stock;
-end if;
-update products set unitsinstock = unitsinstock - p_quantity ...
-```
-
-### Advanced — SP10: Multi-Product Order
-```sql
--- validates ALL products first → inserts order → loops through products
-for i in 1..array_length(p_productids, 1) loop
-    select unitsinstock into v_stock from products where productid = p_productids[i];
-    if v_stock < p_quantities[i] then
-        raise exception 'stock low for product %', p_productids[i];
-    end if;
-end loop;
--- insert order + all items + update all stocks
-```
-
----
-
-## 14. Common Mistakes
-
-| Mistake | Problem | Fix |
-|---------|---------|-----|
-| No `end if;` | Syntax error | Every `if` must end with `end if;` |
-| Param name = column name | Ambiguous reference | Always prefix params with `p_` |
-| Variable not declared | Runtime error | Always declare in `declare` block |
-| `raise notice 'rolled back'` | No error info | Add `: %', sqlerrm` |
-| `%%%` for percent symbol | Prints `%10` instead of `10%` | Use `% %%` |
-| Forgetting `rollback` | Partial data saved | Always add `rollback` in exception |
-| `commit` inside begin block | Transaction issues | Don't call `commit` manually in plpgsql |
-| `%item` without space | Looks like `3item` | Use `'% item(s)'` with space |
-
----
-
-## 15. Quick Reference Cheatsheet
+## 13. Quick Reference Cheatsheet
 
 ```sql
 -- CREATE
