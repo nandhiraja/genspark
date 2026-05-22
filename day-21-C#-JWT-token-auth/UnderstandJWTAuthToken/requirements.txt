@@ -1,0 +1,10 @@
+dotnet add package Swashbuckle.AspNetCore
+
+
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL --version 9.0.0
+dotnet add package Microsoft.EntityFrameworkCore.Design --version 9.0.0
+
+dotnet tool install --global dotnet-ef --version 9.0.0
+
+dotnet add package System.IdentityModel.Tokens.Jwt
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
