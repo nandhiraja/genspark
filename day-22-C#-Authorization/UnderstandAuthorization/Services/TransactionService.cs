@@ -199,49 +199,52 @@ namespace BankingAPI.Services
 
         public SearchResponse SearchTransactions(SearchRequest request)
         {   
-            SearchResponse requestResult = new SearchResponse();
-
-            if (request.CurrentUserAccountNo == "")
+            if (string.IsNullOrWhiteSpace(request.CurrentUserAccountNo))
             {
                 throw new ArgumentException("User Not Found");
             }
 
+            IQueryable<Transaction> query = _context.Transactions
+                .Where(t => t.FromAccountNumber == request.CurrentUserAccountNo);
 
-            List<Transaction> allUserTransaction = _context.Transactions.Where(T=>T.FromAccountNumber == request.CurrentUserAccountNo).ToList();
-
-            // check for receiver
-            if (request.TransferAccountNo != "")
+            if (!string.IsNullOrWhiteSpace(request.TransferAccountNo))
             {
-                allUserTransaction = allUserTransaction.Where(t=>t.ToAccountNumber==request.TransferAccountNo).ToList();
+                query = query.Where(t => t.ToAccountNumber == request.TransferAccountNo);
             }
 
-            // check for date
-            if (request.FromDate.HasValue && request.ToDate.HasValue)
+            if (request.FromDate.HasValue)
             {
-               allUserTransaction = allUserTransaction.Where(t=>t.TransactionDate >= request.FromDate && t.TransactionDate <= request.ToDate).ToList();
+                query = query.Where(t => t.TransactionDate >= request.FromDate.Value);
             }
-            else if (request.FromDate.HasValue)
+            if (request.ToDate.HasValue)
             {
-               allUserTransaction = allUserTransaction.Where(t=>t.TransactionDate >= request.FromDate).ToList();
-            }
-            else if (request.ToDate.HasValue)
-            {
-               allUserTransaction = allUserTransaction.Where(t=>t.TransactionDate <= request.ToDate).ToList();
+                query = query.Where(t => t.TransactionDate <= request.ToDate.Value);
             }
 
-            // amount range 
-            if(request.AmountRange["from"]!=0  && request.AmountRange["to"]!=0)
+            int fromAmount = request.AmountRange.GetValueOrDefault("from", 0);
+            int toAmount = request.AmountRange.GetValueOrDefault("to", 0);
+
+            if (fromAmount != 0 && toAmount != 0)
             {
-                allUserTransaction =allUserTransaction.Where(t=> t.Amount>=request.AmountRange["from"] && t.Amount<=request.AmountRange["to"]).ToList();
+                query = query.Where(t => t.Amount >= fromAmount && t.Amount <= toAmount);
             }
 
             if (request.SortByDesc)
             {
-                allUserTransaction.OrderByDescending(t=>t.TransactionDate);
+                query = query.OrderByDescending(t => t.TransactionDate);
+            }
+            else
+            {
+                query = query.OrderBy(t => t.TransactionDate);
             }
 
+            List<Transaction> filteredTransactions = query.ToList();
+            SearchResponse requestResult = new SearchResponse
+            {
+                Accounts = filteredTransactions 
+            };
 
             return requestResult;
-        }
+        }   
     }
 }
