@@ -1,0 +1,4 @@
+dotnet new nunit -o BankingApp.Test
+dotnet add package Microsoft.EntityFrameworkCore.InMemory
+
+dotnet add BankingApp.Test.csproj reference ../UnderstandAuthorization/UnderstandAuthorization.csproj
