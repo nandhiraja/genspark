@@ -1,0 +1,15 @@
+<!-- This is Interpolation -->
+<h4>Welcome,{{name}}</h4>
+
+<!-- signals -->
+<h5>{{nameSignal()}}</h5>
+
+
+<!-- This is Property Binding -->
+<input type="text" [value]="name">
+
+<!-- This is Event Binding -->
+<button (click)="name='Nandhiraja'">Change Name</button>
+
+<!-- This is Two Way Binding -->
+<input type="text" [(ngModel)]="name">  
