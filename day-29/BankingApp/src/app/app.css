@@ -1,0 +1,8 @@
+.landing-content{
+    margin: 2rem auto;
+    width: 80%;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
