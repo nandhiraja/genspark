@@ -1,0 +1,74 @@
+<section>
+    <h1>Login</h1>
+    <form  (ngSubmit)="handleLoginClick()">
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" 
+            [formField]="loginForm.username">
+            @for (error of loginForm.username().errors(); track error.message)  {
+                <div class="alert alert-danger">
+                    {{ error.message }}
+                </div>
+        }    
+     </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" [formField]="loginForm.password">
+             @for (error of loginForm.password().errors(); track error.message) {
+                <div class="alert alert-danger">
+                    {{ error.message }}
+                </div>
+        }
+        </div>
+        <button [disabled]="progress() || loginForm().invalid()"  type="submit">Login
+            @if (progress()) {
+                <div class="spinner-border text-success" role="status">
+                <span class="sr-only"></span>
+            </div>
+            }
+        </button>
+    </form>
+</section>
+
+
+
+
+
+
+
+
+
+
+<!-- <section>
+    <h1>Login</h1>
+
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" 
+            [(ngModel)]="loginModel().username" 
+            name="username" #username="ngModel" 
+             minlength="3" required>
+            @if (username.touched && username.invalid) {
+                <div class="alert alert-danger">
+                   @if (username.errors?.['required']) {
+                    <span>Username is required.</span>
+                   }
+                   @if (username.errors?.['minlength']) {
+                    <span>Username must be at least 3 characters long.</span>
+                   }
+                </div>
+            }
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" [(ngModel)]="loginModel().password" name="password" #password="ngModel" required>
+        </div>
+        <button [disabled]="progress()" (click)="handleLoginClick()" type="submit">Login
+            @if (progress()) {
+                <div class="spinner-border text-success" role="status">
+                <span class="sr-only"></span>
+            </div>
+            }
+        </button>
+
+</section> -->

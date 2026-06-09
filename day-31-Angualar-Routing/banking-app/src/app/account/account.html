@@ -1,0 +1,18 @@
+<div>
+    <!-- <input type="text" placeholder="Enter account number" #accNumber> -->
+    <input type="text" placeholder="Enter account number" [(ngModel)]="searchAccountNumber">
+    <button (click)="getAccountDetails()">Get Account Details</button>
+     
+</div>
+@if(accountDetails){
+<div >
+    <h3>Account Details:</h3>
+    <p>Account Number: {{ accountDetails.accountNumber }}</p>
+    <p>Account Holder: {{ accountDetails.accountHolder }}</p>
+    <p>Balance: {{ accountDetails.balance }}</p>
+    <button (click)="handleSendMoneyClick()">Send Money</button>
+</div>
+}
+
+<hr/>
+<router-outlet></router-outlet>
